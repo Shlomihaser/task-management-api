@@ -107,8 +107,8 @@ Key configuration properties in `application.properties`:
 ```properties
 # Database
 spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
+spring.datasource.username=SOME_USERNAME
+spring.datasource.password=SOME_PASSWORD
 
 # AWS Cognito
 aws.cognito.user-pool-id=your-user-pool-id
