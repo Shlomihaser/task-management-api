@@ -22,7 +22,11 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/api/auth/**")
+        http.securityMatcher(request -> {
+                    String path = request.getRequestURI();
+                    return path.equals("/api/auth/signin") ||
+                            path.equals("/api/auth/force-password-change");
+                })
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
 
@@ -48,7 +52,7 @@ public class SecurityConfig {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setPrincipalClaimName("sub");
 
-        // ← ADD THIS: Extract roles from Cognito groups
+
         JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
         authoritiesConverter.setAuthorityPrefix("ROLE_");
         authoritiesConverter.setAuthoritiesClaimName("cognito:groups");

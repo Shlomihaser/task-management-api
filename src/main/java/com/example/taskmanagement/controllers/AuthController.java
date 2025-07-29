@@ -1,5 +1,6 @@
 package com.example.taskmanagement.controllers;
 
+import com.example.taskmanagement.annotations.CurrentUser;
 import com.example.taskmanagement.model.dto.requests.SignInRequestDto;
 import com.example.taskmanagement.model.dto.response.SignInResponse;
 import com.example.taskmanagement.services.AuthService;
@@ -27,6 +28,12 @@ public class AuthController {
         String idToken = authService.forcePasswordChange(signInRequestDto);
         SignInResponse signInResponse = new SignInResponse(idToken);
         return ResponseEntity.ok(signInResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@CurrentUser String userId) {
+        authService.logOut(userId);
+        return ResponseEntity.ok("Logged out successfully");
     }
 
 }

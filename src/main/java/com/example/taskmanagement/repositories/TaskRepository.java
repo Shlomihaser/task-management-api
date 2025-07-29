@@ -14,7 +14,7 @@ import java.util.UUID;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, UUID> {
     
-    // Existing methods
+
     @Query("SELECT t FROM Task t JOIN FETCH t.project p WHERE p.ownerId = :ownerId")
     List<Task> findAllByOwnerId(String ownerId);
 
@@ -24,7 +24,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Query("SELECT t FROM Task t JOIN FETCH t.project p WHERE t.id = :taskId AND p.ownerId = :ownerId")
     Optional<Task> findByIdAndOwnerId(UUID taskId, String ownerId);
     
-    // Paginated methods
+
     @Query("SELECT t FROM Task t JOIN FETCH t.project p WHERE p.ownerId = :ownerId")
     Page<Task> findAllByOwnerIdPaginated(String ownerId, Pageable pageable);
 

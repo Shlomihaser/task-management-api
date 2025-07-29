@@ -71,7 +71,7 @@ class TaskServiceImplTest {
                 .build();
     }
 
-    // Test listTasks(String ownerId)
+
     @Test
     void listTasks_ShouldReturnTaskList_WhenOwnerIdProvided() {
         // Given
@@ -100,7 +100,7 @@ class TaskServiceImplTest {
         verify(taskRepository).findAllByOwnerId(ownerId);
     }
 
-    // Test listTasks(String ownerId, Pageable pageable)
+
     @Test
     void listTasksPaginated_ShouldReturnPagedResponse_WhenValidInput() {
         // Given
@@ -119,7 +119,7 @@ class TaskServiceImplTest {
         verify(taskRepository).findAllByOwnerIdPaginated(ownerId, pageable);
     }
 
-    // Test listTasksByProject(Project project)
+
     @Test
     void listTasksByProject_ShouldReturnProjectTasks_WhenValidProject() {
         // Given
@@ -136,7 +136,7 @@ class TaskServiceImplTest {
         verify(taskRepository).findByProjectIdAndOwnerId(project.getId(), project.getOwnerId());
     }
 
-    // Test listTasksByProject(String ownerId, String projectId, Pageable pageable)
+
     @Test
     void listTasksByProjectPaginated_ShouldReturnPagedTasks_WhenValidInput() {
         // Given
@@ -174,7 +174,7 @@ class TaskServiceImplTest {
         verifyNoInteractions(taskRepository);
     }
 
-    // Test createTask(String ownerId, String projectId, Task task)
+
     @Test
     void createTask_ShouldReturnSavedTask_WhenValidInput() {
         // Given
@@ -225,7 +225,7 @@ class TaskServiceImplTest {
         verifyNoInteractions(taskRepository);
     }
 
-    // Test updateTask(String ownerId, String taskId, Task task)
+
     @Test
     void updateTask_ShouldReturnUpdatedTask_WhenValidInput() {
         // Given
@@ -266,8 +266,7 @@ class TaskServiceImplTest {
         
         verify(taskRepository).findByIdAndOwnerId(taskId, ownerId);
         verify(taskRepository).save(existingTask);
-        
-        // Verify the existing task was updated
+
         assertThat(existingTask.getName()).isEqualTo("Updated Name");
         assertThat(existingTask.getDescription()).isEqualTo("Updated Description");
         assertThat(existingTask.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
@@ -303,7 +302,7 @@ class TaskServiceImplTest {
         verifyNoInteractions(taskRepository);
     }
 
-    // Test deleteTask(String ownerId, String taskId)
+
     @Test
     void deleteTask_ShouldDeleteTask_WhenTaskExists() {
         // Given
@@ -333,7 +332,7 @@ class TaskServiceImplTest {
         verify(taskRepository, never()).delete(any());
     }
 
-    // Test getTaskById(String ownerId, String taskId)
+
     @Test
     void getTaskById_ShouldReturnTask_WhenTaskExists() {
         // Given

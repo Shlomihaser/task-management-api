@@ -56,7 +56,7 @@ class ProjectServiceImplTest {
                 .build();
     }
 
-    // Test listProjects(String ownerId)
+
     @Test
     void listProjects_ShouldReturnProjectList_WhenOwnerIdProvided() {
         // Given
@@ -120,7 +120,7 @@ class ProjectServiceImplTest {
         verify(projectRepository).findAllWithTasksPaginated(ownerId, pageable);
     }
 
-    // Test createProject(String ownerId, Project project)
+
     @Test
     void createProject_ShouldReturnSavedProject_WhenValidInput() {
         // Given
@@ -176,7 +176,7 @@ class ProjectServiceImplTest {
         verify(projectRepository).save(projectToCreate);
     }
 
-    // Test getProjectById(String ownerId, String projectId)
+
     @Test
     void getProjectById_ShouldReturnProject_WhenProjectExists() {
         // Given
@@ -216,7 +216,7 @@ class ProjectServiceImplTest {
         verifyNoInteractions(projectRepository);
     }
 
-    // Test deleteProject(String ownerId, String projectId)
+
     @Test
     void deleteProject_ShouldDeleteProject_WhenProjectExists() {
         // Given
@@ -282,10 +282,9 @@ class ProjectServiceImplTest {
         // Then
         verify(projectRepository).findByIdAndOwnerId(ownerId, projectId);
         verify(projectRepository).delete(project);
-        // Note: Cascade deletion of tasks is handled by JPA/database, not in service layer
     }
 
-    // Test updateProject(String ownerId, String projectId, Project project)
+
     @Test
     void updateProject_ShouldReturnUpdatedProject_WhenValidInput() {
         // Given
@@ -325,8 +324,7 @@ class ProjectServiceImplTest {
         
         verify(projectRepository).findByIdAndOwnerId(ownerId, projectId);
         verify(projectRepository).save(existingProject);
-        
-        // Verify the existing project was updated
+
         assertThat(existingProject.getName()).isEqualTo("Updated Name");
         assertThat(existingProject.getDescription()).isEqualTo("Updated Description");
     }

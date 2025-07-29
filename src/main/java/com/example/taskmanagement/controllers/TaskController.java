@@ -115,7 +115,7 @@ public class TaskController {
                                                        @PathVariable String taskId) {
         // 1. get the task byId - if not the service will throw task not found
        Task task = taskService.getTaskById(ownerId, taskId);
-//       // 2. map it to TaskDto
+       // 2. map it to TaskDto
        TaskResponseDto taskResponse = taskMapper.toDto(task);
         return ResponseEntity.ok(taskResponse);
     }

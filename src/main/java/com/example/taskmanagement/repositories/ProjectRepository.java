@@ -18,8 +18,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
     @Query("SELECT p FROM Project p LEFT JOIN FETCH p.tasks WHERE p.ownerId = :ownerId")
     List<Project> findAllWithTasks(String ownerId);
-    
-    // Paginated version
+
     @Query("SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.tasks WHERE p.ownerId = :ownerId")
     Page<Project> findAllWithTasksPaginated(String ownerId, Pageable pageable);
     

@@ -93,7 +93,6 @@ public class ProjectController {
     @PutMapping("/{projectId}")
     ResponseEntity<ProjectResponseDto> updateProject(@CurrentUser String ownerId,
                                                      @PathVariable String projectId, @Valid @RequestBody ProjectRequestDto projectRequest) {
-        // Create project entity from request
         Project project = projectMapper.toEntity(projectRequest);
         Project updatedProject = projectService.updateProject(ownerId, projectId, project);
         ProjectResponseDto projectResponse = projectMapper.toDto(updatedProject);

@@ -51,4 +51,15 @@ public class AuthService {
             throw new AuthenticationException("Password change not required for this user");
         }
     }
+
+    public void logOut(String userId) {
+        try {
+            String username = cognitoService.getUsernameFromSub(userId);
+            cognitoService.logoutUser(username);
+        } catch (Exception e) {
+            throw new AuthenticationException("Logout failed: " + e.getMessage());
+        }
+    }
+
+
 }
