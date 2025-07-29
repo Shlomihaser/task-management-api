@@ -11,11 +11,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Test configuration that provides a mock JwtDecoder for integration tests.
- * This allows Spring Security to work properly in test environment without 
- * requiring a real JWT issuer.
- */
+
 @TestConfiguration
 public class TestSecurityConfig {
 
@@ -25,10 +21,7 @@ public class TestSecurityConfig {
         return new MockJwtDecoder();
     }
 
-    /**
-     * Mock JWT decoder that creates a test JWT token.
-     * This is only used in test environment.
-     */
+
     private static class MockJwtDecoder implements JwtDecoder {
         
         @Override

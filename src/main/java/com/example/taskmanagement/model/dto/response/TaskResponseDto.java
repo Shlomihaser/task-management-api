@@ -8,17 +8,15 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class TaskResponseDto {
-    private UUID id;
-    private String name;
-    private String description;
-    private TaskStatus status;
-    private UUID projectId;
-    private String projectName;
-    private String createdAt;
-    private String updatedAt;
+
+public record TaskResponseDto (
+        UUID id,
+        String name,
+        String description,
+        TaskStatus status,
+        UUID projectId,
+        String projectName,
+        String createdAt,
+        String updatedAt){
+
 }

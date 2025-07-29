@@ -30,7 +30,7 @@ public class PagedResponse<T> {
         private boolean hasPrevious;
     }
     
-    // Convenience method to create PagedResponse from Spring Data Page
+
     public static <T> PagedResponse<T> of(org.springframework.data.domain.Page<T> page) {
         PageMetadata metadata = PageMetadata.builder()
                 .number(page.getNumber())
