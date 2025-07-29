@@ -10,6 +10,10 @@ A Spring Boot REST API for managing projects and tasks with AWS Cognito authenti
 - **Admin Functions**: Administrative operations
 - **Database**: PostgreSQL with JPA/Hibernate
 
+## Architecture
+
+![Class Diagram](class-diagram.png)
+
 ## Tech Stack
 
 - Java 21
