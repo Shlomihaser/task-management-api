@@ -52,14 +52,6 @@ public class AuthService {
         }
     }
 
-    public void logOut(String userId) {
-        try {
-            String username = cognitoService.getUsernameFromSub(userId);
-            cognitoService.logoutUser(username);
-        } catch (Exception e) {
-            throw new AuthenticationException("Logout failed: " + e.getMessage());
-        }
-    }
 
 
 }

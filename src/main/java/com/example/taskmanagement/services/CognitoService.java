@@ -112,18 +112,7 @@ public class CognitoService {
         cognitoClient.adminDeleteUser(request);
     }
 
-    public void logoutUser(String username) {
-        try {
-            AdminUserGlobalSignOutRequest request = AdminUserGlobalSignOutRequest.builder()
-                    .userPoolId(userPoolId)
-                    .username(username)
-                    .build();
 
-            cognitoClient.adminUserGlobalSignOut(request);
-        } catch (Exception e) {
-            throw new InternalErrorException("Failed to logout user", e);
-        }
-    }
 
     public String getUsernameFromSub(String sub) {
         Optional<UserType> user = getUserBySub(sub);

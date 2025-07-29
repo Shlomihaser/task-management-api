@@ -30,10 +30,5 @@ public class AuthController {
         return ResponseEntity.ok(signInResponse);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(@CurrentUser String userId) {
-        authService.logOut(userId);
-        return ResponseEntity.ok("Logged out successfully");
-    }
 
 }
