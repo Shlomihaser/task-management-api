@@ -5,6 +5,7 @@ import com.example.taskmanagement.model.dto.UserDto;
 import com.example.taskmanagement.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('admins')")
 public class AdminController {
 
     private final AdminService adminService;

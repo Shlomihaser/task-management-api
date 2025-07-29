@@ -21,6 +21,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIden
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -237,6 +238,29 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("Access denied: Admin role required");
+    }
+
+    // Add handler for Spring Security authorization exceptions
+    @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorDto> handleAuthorizationDenied(
+            org.springframework.security.authorization.AuthorizationDeniedException ex, 
+            HttpServletRequest request) {
+        
+        log.warn("Authorization denied for request: {} {}. User lacks required permissions.", 
+                request.getMethod(), request.getRequestURI());
+        
+        ErrorDto response = new ErrorDto(
+                "Access denied: Insufficient permissions",
+                "ACCESS_DENIED",
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(Exception.class)
