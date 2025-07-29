@@ -1,17 +1,15 @@
 package com.example.taskmanagement.services.impl;
 
-import com.example.taskmanagement.exceptions.ApiBaseException;
-import com.example.taskmanagement.exceptions.ProjectNotFoundException;
 import com.example.taskmanagement.exceptions.TaskNotFoundException;
+import com.example.taskmanagement.model.dto.response.PagedResponse;
 import com.example.taskmanagement.model.entity.Project;
 import com.example.taskmanagement.model.entity.Task;
-import com.example.taskmanagement.model.enums.ErrorCode;
-import com.example.taskmanagement.repositories.ProjectRepository;
 import com.example.taskmanagement.repositories.TaskRepository;
 import com.example.taskmanagement.services.ProjectService;
 import com.example.taskmanagement.services.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,8 +28,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public PagedResponse<Task> listTasks(String ownerId, Pageable pageable) {
+        Page<Task> taskPage = taskRepository.findAllByOwnerIdPaginated(ownerId, pageable);
+        return PagedResponse.of(taskPage);
+    }
+
+    @Override
     public List<Task> listTasksByProject(Project project) {
         return taskRepository.findByProjectIdAndOwnerId(project.getId(), project.getOwnerId());
+    }
+
+    @Override
+    public PagedResponse<Task> listTasksByProject(String ownerId, String projectId, Pageable pageable) {
+        // Validate project exists and belongs to user
+        Project project = projectService.getProjectById(ownerId, projectId);
+        
+        Page<Task> taskPage = taskRepository.findByProjectIdAndOwnerIdPaginated(
+            project.getId(), ownerId, pageable);
+        return PagedResponse.of(taskPage);
     }
 
     @Override
@@ -45,7 +59,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task updateTask(String ownerId, String taskId, Task task){
-        Optional<Task> existingTask = taskRepository.findByIdAndOwnerId(UUID.fromString(taskId), ownerId);
+
+        Optional<Task> existingTask = Optional.ofNullable(getTaskById(ownerId, taskId));
         if (existingTask.isEmpty())
             throw new TaskNotFoundException("Task not found with id: " + taskId);
 
@@ -71,6 +86,5 @@ public class TaskServiceImpl implements TaskService {
 
         return task.get();
     }
-
 
 }

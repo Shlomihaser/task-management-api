@@ -1,8 +1,10 @@
 package com.example.taskmanagement.controllers;
 
 
+import com.example.taskmanagement.annotations.CurrentUser;
 import com.example.taskmanagement.mappers.TaskMapper;
 import com.example.taskmanagement.model.dto.requests.TaskRequestDto;
+import com.example.taskmanagement.model.dto.response.PagedResponse;
 import com.example.taskmanagement.model.dto.response.TaskResponseDto;
 import com.example.taskmanagement.model.entity.Project;
 import com.example.taskmanagement.model.entity.Task;
@@ -10,6 +12,9 @@ import com.example.taskmanagement.services.ProjectService;
 import com.example.taskmanagement.services.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,9 +32,9 @@ public class TaskController {
     private final ProjectService projectService;
     private final TaskMapper taskMapper;
 
-    @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> listTasks(@AuthenticationPrincipal Jwt principal) {
-        String ownerId = principal.getSubject();
+    @GetMapping("/all")
+    public ResponseEntity<List<TaskResponseDto>> listTasks(@CurrentUser String ownerId) {
+
         List<Task> tasks = taskService.listTasks(ownerId);
         List<TaskResponseDto> taskResults = tasks.stream()
                 .map(taskMapper::toDto)
@@ -38,10 +43,32 @@ public class TaskController {
         return ResponseEntity.ok(taskResults);
     }
 
-    @GetMapping(params = "projectId")
-    public ResponseEntity<List<TaskResponseDto>> listTasksByProject(@AuthenticationPrincipal Jwt principal,
+    @GetMapping
+    public ResponseEntity<PagedResponse<TaskResponseDto>> listTasksPaginated(
+            @CurrentUser String ownerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponse<Task> tasks = taskService.listTasks(ownerId, pageable);
+        
+
+        List<TaskResponseDto> taskDtos = tasks.getContent().stream()
+                .map(taskMapper::toDto)
+                .toList();
+                
+        PagedResponse<TaskResponseDto> response = PagedResponse.<TaskResponseDto>builder()
+                .content(taskDtos)
+                .page(tasks.getPage())
+                .build();
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(path = "/all",params = "projectId")
+    public ResponseEntity<List<TaskResponseDto>> listTasksByProject(@CurrentUser String ownerId,
                                                                     @RequestParam String projectId) {
-        String ownerId = principal.getSubject();
         
         // 1. validate there is project with this id
         Project project = projectService.getProjectById(ownerId, projectId);
@@ -57,10 +84,35 @@ public class TaskController {
         return ResponseEntity.ok(taskResponses);
     }
 
+    @GetMapping(params = "projectId")
+    public ResponseEntity<PagedResponse<TaskResponseDto>> listTasksByProjectPaginated(
+            @CurrentUser String ownerId,
+            @RequestParam String projectId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        
+        // Create Pageable
+        Pageable pageable = PageRequest.of(page, size);
+        
+        PagedResponse<Task> tasks = taskService.listTasksByProject(ownerId, projectId, pageable);
+        
+        // Map to DTOs
+        List<TaskResponseDto> taskDtos = tasks.getContent().stream()
+                .map(taskMapper::toDto)
+                .toList();
+                
+        PagedResponse<TaskResponseDto> response = PagedResponse.<TaskResponseDto>builder()
+                .content(taskDtos)
+                .page(tasks.getPage())
+                .build();
+        
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{taskId}")
-    public ResponseEntity<TaskResponseDto> getTaskById(@AuthenticationPrincipal Jwt principal,
+    public ResponseEntity<TaskResponseDto> getTaskById(@CurrentUser String ownerId,
                                                        @PathVariable String taskId) {
-        String ownerId = principal.getSubject();
         // 1. get the task byId - if not the service will throw task not found
        Task task = taskService.getTaskById(ownerId, taskId);
 //       // 2. map it to TaskDto
@@ -70,9 +122,8 @@ public class TaskController {
 
 
     @PostMapping
-    public ResponseEntity<TaskResponseDto> createTask(@AuthenticationPrincipal Jwt principal,
+    public ResponseEntity<TaskResponseDto> createTask(@CurrentUser String ownerId,
                                                       @Valid @RequestBody TaskRequestDto taskRequest) {
-        String ownerId = principal.getSubject();
         String projectId = taskRequest.getProjectId();
         
         Task task = taskMapper.toEntity(taskRequest);
@@ -84,10 +135,9 @@ public class TaskController {
 
 
     @PutMapping("/{taskId}")
-    public ResponseEntity<TaskResponseDto> updateTask(@AuthenticationPrincipal Jwt principal,
+    public ResponseEntity<TaskResponseDto> updateTask(@CurrentUser String ownerId,
                                                 @PathVariable String taskId,
                                               @Valid @RequestBody TaskRequestDto taskRequest) {
-        String ownerId = principal.getSubject();
         Task taskToUpdate = taskMapper.toEntity(taskRequest);
         Task updatedTask = taskService.updateTask(ownerId, taskId, taskToUpdate);
         TaskResponseDto taskResponse = taskMapper.toDto(updatedTask);
@@ -95,9 +145,8 @@ public class TaskController {
     }
 
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<String> deleteTask(@AuthenticationPrincipal Jwt principal,
+    public ResponseEntity<String> deleteTask(@CurrentUser String ownerId,
                                              @PathVariable String taskId) {
-        String ownerId = principal.getSubject();
         taskService.deleteTask(ownerId, taskId);
         return ResponseEntity.ok("Task "+ taskId + " deleted successfully");
    }

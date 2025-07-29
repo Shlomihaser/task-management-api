@@ -2,10 +2,13 @@ package com.example.taskmanagement.services.impl;
 
 
 import com.example.taskmanagement.exceptions.ProjectNotFoundException;
+import com.example.taskmanagement.model.dto.response.PagedResponse;
 import com.example.taskmanagement.model.entity.Project;
 import com.example.taskmanagement.repositories.ProjectRepository;
 import com.example.taskmanagement.services.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +24,12 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> listProjects(String ownerId) {
         return projectRepository.findAllWithTasks(ownerId);
+    }
+
+    @Override
+    public PagedResponse<Project> listProjects(String ownerId, Pageable pageable) {
+        Page<Project> projectPage = projectRepository.findAllWithTasksPaginated(ownerId, pageable);
+        return PagedResponse.of(projectPage);
     }
 
     @Override
@@ -51,7 +60,9 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ProjectNotFoundException("Project not found with id: " + projectId);
 
         Project project = projectOpt.get();
-
+        
+        // Delete project and all associated tasks (cascade delete configured in Project entity)
+        // This will automatically delete all tasks that belong to this project
         projectRepository.delete(project);
     }
 

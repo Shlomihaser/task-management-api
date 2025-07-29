@@ -3,14 +3,12 @@ package com.example.taskmanagement.exceptions.handler;
 
 import com.example.taskmanagement.exceptions.ApiBaseException;
 import com.example.taskmanagement.exceptions.AuthenticationException;
-import com.example.taskmanagement.model.dto.response.ErrorResponse;
-import com.example.taskmanagement.model.enums.ErrorCode;
+import com.example.taskmanagement.model.dto.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,14 +29,14 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(
+    public ResponseEntity<ErrorDto> handleValidationExceptions(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
 
-        List<ErrorResponse.FieldError> fieldErrors = ex.getBindingResult()
+        List<ErrorDto.FieldError> fieldErrors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> new ErrorResponse.FieldError(
+                .map(error -> new ErrorDto.FieldError(
                         error.getField(),           // Field name
                         error.getDefaultMessage()   // Error message
                 ))
@@ -49,7 +47,7 @@ public class GlobalExceptionHandler {
                 fieldErrors.stream().map(fe -> fe.field() + ": " + fe.message()).collect(Collectors.joining(", ")));
 
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 "Validation failed",
                 "VALIDATION_ERROR",
                 request.getRequestURI(),
@@ -60,7 +58,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleMethodNotAllowed(
+    public ResponseEntity<ErrorDto> handleMethodNotAllowed(
             HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         
         String message = String.format("HTTP method '%s' not supported for this endpoint. Supported methods: %s",
@@ -69,7 +67,7 @@ public class GlobalExceptionHandler {
         log.warn("Method not allowed for request: {} {}. Error: {}", 
                 request.getMethod(), request.getRequestURI(), message);
         
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 message,
                 "METHOD_NOT_ALLOWED",
                 request.getRequestURI()
@@ -79,7 +77,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleUnsupportedMediaType(
+    public ResponseEntity<ErrorDto> handleUnsupportedMediaType(
             HttpMediaTypeNotSupportedException ex, HttpServletRequest request) {
         
         String message = String.format("Media type '%s' not supported. Supported types: %s",
@@ -88,7 +86,7 @@ public class GlobalExceptionHandler {
         log.warn("Unsupported media type for request: {} {}. Error: {}", 
                 request.getMethod(), request.getRequestURI(), message);
         
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 message,
                 "UNSUPPORTED_MEDIA_TYPE",
                 request.getRequestURI()
@@ -98,7 +96,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingParameter(
+    public ResponseEntity<ErrorDto> handleMissingParameter(
             MissingServletRequestParameterException ex, HttpServletRequest request) {
         
         String message = String.format("Required parameter '%s' is missing", ex.getParameterName());
@@ -106,7 +104,7 @@ public class GlobalExceptionHandler {
         log.warn("Missing parameter for request: {} {}. Error: {}", 
                 request.getMethod(), request.getRequestURI(), message);
         
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 message,
                 "MISSING_REQUIRED_FIELD",
                 request.getRequestURI()
@@ -116,7 +114,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidJson(
+    public ResponseEntity<ErrorDto> handleInvalidJson(
             HttpMessageNotReadableException ex, HttpServletRequest request) {
         
         String message = "Invalid JSON format or data type mismatch";
@@ -124,7 +122,7 @@ public class GlobalExceptionHandler {
         log.warn("Invalid JSON for request: {} {}. Error: {}", 
                 request.getMethod(), request.getRequestURI(), ex.getMessage());
         
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 message,
                 "INVALID_REQUEST_FORMAT",
                 request.getRequestURI()
@@ -134,7 +132,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<ErrorResponse> handleInvalidPathVariable(
+    public ResponseEntity<ErrorDto> handleInvalidPathVariable(
             Exception ex, HttpServletRequest request) {
         
         String message = "Invalid parameter format";
@@ -142,7 +140,7 @@ public class GlobalExceptionHandler {
         log.warn("Invalid parameter format for request: {} {}. Error: {}", 
                 request.getMethod(), request.getRequestURI(), ex.getMessage());
         
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 message,
                 "INVALID_UUID_FORMAT",
                 request.getRequestURI()
@@ -152,14 +150,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthenticationException(
+    public ResponseEntity<ErrorDto> handleAuthenticationException(
             AuthenticationException ex, HttpServletRequest request) {
         
 
         log.warn("Authentication failed for request: {} {}. Error: {}", 
                 request.getMethod(), request.getRequestURI(), ex.getMessage());
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 ex.getMessage(),
                 ex.getErrorCode().name(),
                 request.getRequestURI()
@@ -168,7 +166,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ApiBaseException.class)
-    public ResponseEntity<ErrorResponse> handleApiBaseException(
+    public ResponseEntity<ErrorDto> handleApiBaseException(
             ApiBaseException ex, HttpServletRequest request) {
         
 
@@ -183,7 +181,7 @@ public class GlobalExceptionHandler {
                     ex.getMessage(), ex.getErrorCode(), ex);
         }
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 ex.getMessage(),
                 ex.getErrorCode().name(),
                 request.getRequestURI()
@@ -192,7 +190,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CognitoIdentityProviderException.class)
-    public ResponseEntity<ErrorResponse> handleCognitoException(
+    public ResponseEntity<ErrorDto> handleCognitoException(
             CognitoIdentityProviderException ex, HttpServletRequest request) {
         
         String cognitoErrorMessage = ex.awsErrorDetails().errorMessage();
@@ -202,7 +200,7 @@ public class GlobalExceptionHandler {
                 request.getMethod(), request.getRequestURI(), 
                 ex.awsErrorDetails().errorCode(), cognitoErrorMessage);
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 cognitoErrorMessage,
                 "EXTERNAL_SERVICE_ERROR",
                 request.getRequestURI()
@@ -211,14 +209,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+    public ResponseEntity<ErrorDto> handleIllegalArgumentException(
             IllegalArgumentException ex, HttpServletRequest request) {
         
 
         log.warn("Invalid argument for request: {} {}. Error: {}", 
                 request.getMethod(), request.getRequestURI(), ex.getMessage());
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 ex.getMessage(),
                 "INVALID_REQUEST_FORMAT",
                 request.getRequestURI()
@@ -227,13 +225,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+    public ResponseEntity<ErrorDto> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex, HttpServletRequest request) {
         
         log.error("Data integrity violation for request: {} {}. Error: {}",
                 request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 "Data integrity violation: " + ex.getMessage(),
                 "RESOURCE_CONFLICT",
                 request.getRequestURI()
@@ -242,13 +240,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleOtherExceptions(
+    public ResponseEntity<ErrorDto> handleOtherExceptions(
             Exception ex, HttpServletRequest request) {
         
         log.error("Unexpected error occurred for request: {} {}. Error: {}",
                 request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorDto response = new ErrorDto(
                 "An unexpected error occurred",
                 "INTERNAL_SERVER_ERROR",
                 request.getRequestURI()

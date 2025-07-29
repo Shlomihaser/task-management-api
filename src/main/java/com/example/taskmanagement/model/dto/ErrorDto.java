@@ -1,12 +1,11 @@
-package com.example.taskmanagement.model.dto.response;
+package com.example.taskmanagement.model.dto;
 
-import com.example.taskmanagement.model.enums.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ErrorResponse(
+public record ErrorDto(
         String message,
         String errorCode,
         long timestamp,
@@ -14,12 +13,12 @@ public record ErrorResponse(
         List<FieldError> fieldErrors
 ) {
     // Constructor for simple errors (no field validation errors)
-    public ErrorResponse(String message, String errorCode, String path) {
+    public ErrorDto(String message, String errorCode, String path) {
         this(message, errorCode, System.currentTimeMillis(), path, null);
     }
     
     // Constructor for validation errors with field details
-    public ErrorResponse(String message, String errorCode, String path, List<FieldError> fieldErrors) {
+    public ErrorDto(String message, String errorCode, String path, List<FieldError> fieldErrors) {
         this(message, errorCode, System.currentTimeMillis(), path, fieldErrors);
     }
     

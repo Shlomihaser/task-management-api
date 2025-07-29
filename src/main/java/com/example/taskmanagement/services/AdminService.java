@@ -1,11 +1,11 @@
 package com.example.taskmanagement.services;
 
-import com.example.taskmanagement.model.dto.UserDto;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
 import java.util.List;
 
 public interface AdminService {
-    List<UserDto> listUsers();
-    UserDto getUserById(String id);
+    List<UserType> listUsers();
+    UserType getUserById(String id);
     void deleteUserById(String id);
 }

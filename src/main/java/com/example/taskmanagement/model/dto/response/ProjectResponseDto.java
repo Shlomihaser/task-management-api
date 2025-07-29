@@ -4,6 +4,8 @@ public record ProjectResponseDto(
         String id,
         String name,
         String description,
-        long taskCount
+        long taskCount,
+        String createdAt,
+        String updatedAt
 ) {
 }
