@@ -144,4 +144,3 @@ aws.cognito.region=your-region
 1. User signs in through Cognito (returns JWT tokens)
 2. Client includes `Authorization: Bearer <access_token>` in API requests
 3. API validates the token and extracts user information
-4. Use `@CurrentUser` annotation in controllers to access authenticated user details
